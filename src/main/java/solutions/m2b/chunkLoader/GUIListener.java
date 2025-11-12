@@ -41,15 +41,12 @@ public class GUIListener implements Listener {
         }
 
         String titleString = getPlainText(title);
-        plugin.getLogger().info("GUI Click detected - Title: '" + titleString + "'");
 
         if (titleString.equals("Chunk Loaders")) {
             event.setCancelled(true);
-            plugin.getLogger().info("Handling main menu click");
             handleMainMenuClick(event, player);
         } else if (titleString.startsWith("Confirm to remove: ")) {
             event.setCancelled(true);
-            plugin.getLogger().info("Handling confirm to remove click");
             handleConfirmMenuClick(event, player, titleString.substring(19));
         }
     }
@@ -182,11 +179,8 @@ public class GUIListener implements Listener {
         }
         Component component = messageHelper.fromLegacy(legacyText);
         if (component instanceof net.kyori.adventure.text.TextComponent) {
-            String content = ((net.kyori.adventure.text.TextComponent) component).content();
-            plugin.getLogger().info("Extracted plain text from legacy: '" + content + "'");
-            return content;
+            return ((net.kyori.adventure.text.TextComponent) component).content();
         }
-        plugin.getLogger().info("Component is not a TextComponent, type: " + component.getClass().getName());
         return "";
     }
 }

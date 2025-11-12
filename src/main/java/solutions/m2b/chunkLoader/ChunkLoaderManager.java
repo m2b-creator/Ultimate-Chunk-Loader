@@ -107,8 +107,6 @@ public class ChunkLoaderManager {
             chunk.addPluginChunkTicket(plugin);
             chunk.setForceLoaded(true);
         }
-
-        plugin.getLogger().info("Loaded " + region.getChunkCount() + " chunks for region '" + region.getName() + "'");
     }
 
     private void unloadRegionChunks(ChunkLoaderRegion region) {
@@ -122,8 +120,6 @@ public class ChunkLoaderManager {
             chunk.removePluginChunkTicket(plugin);
             chunk.setForceLoaded(false);
         }
-
-        plugin.getLogger().info("Unloaded " + region.getChunkCount() + " chunks for region '" + region.getName() + "'");
     }
 
     public List<Map<String, Object>> serializeRegions() {

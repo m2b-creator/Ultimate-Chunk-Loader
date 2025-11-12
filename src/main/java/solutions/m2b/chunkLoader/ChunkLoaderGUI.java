@@ -29,8 +29,6 @@ public class ChunkLoaderGUI {
     public void openMainMenu(Player player) {
         Collection<ChunkLoaderRegion> regions = manager.getAllRegions();
 
-        plugin.getLogger().info("Opening GUI for " + player.getName() + " with " + regions.size() + " regions");
-
         int size = Math.min(54, ((regions.size() + 8) / 9) * 9);
         if (size < 9) size = 9;
 
@@ -40,13 +38,11 @@ public class ChunkLoaderGUI {
         for (ChunkLoaderRegion region : regions) {
             if (slot >= size) break;
 
-            plugin.getLogger().info("Adding region '" + region.getName() + "' to slot " + slot);
             ItemStack item = createRegionItem(region);
             gui.setItem(slot, item);
             slot++;
         }
 
-        plugin.getLogger().info("GUI created with " + slot + " items, opening for player");
         player.openInventory(gui);
     }
 

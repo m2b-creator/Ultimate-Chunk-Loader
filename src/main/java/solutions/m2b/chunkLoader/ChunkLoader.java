@@ -55,7 +55,6 @@ public final class ChunkLoader extends JavaPlugin {
     public void loadData() {
         try {
             manager.deserializeRegions(dataStorage.loadRegions());
-            getLogger().info("Loaded chunk loader data from file.");
         } catch (Exception e) {
             getLogger().warning("Failed to load chunk loader data: " + e.getMessage());
         }
@@ -64,7 +63,6 @@ public final class ChunkLoader extends JavaPlugin {
     public void saveData() {
         try {
             dataStorage.saveRegions(manager.serializeRegions());
-            getLogger().info("Saved chunk loader data to file.");
         } catch (Exception e) {
             getLogger().severe("Failed to save chunk loader data: " + e.getMessage());
         }

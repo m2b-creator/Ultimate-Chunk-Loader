@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.0.1] - 2025-11-12
+
+### Added
+- Full Spigot 1.21+ compatibility alongside Paper support
+- Bundled Adventure API for cross-platform messaging
+
+### Changed
+- Removed verbose debug logging for cleaner production environment
+- Improved console output to show only essential information
+
+### Technical
+- Integrated BukkitAudiences platform adapter for Spigot support
+- Updated to GradleUp Shadow plugin for Java 21 compatibility
+- Added MessageHelper abstraction layer for platform-agnostic messaging
+
 ## [1.0.0] - 2025-11-12
 
 ### Initial Release 🎉
