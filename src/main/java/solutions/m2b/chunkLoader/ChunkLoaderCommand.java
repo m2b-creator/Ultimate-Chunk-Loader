@@ -54,6 +54,9 @@ public class ChunkLoaderCommand implements CommandExecutor, TabCompleter {
             case "gui":
             case "menu":
                 return handleGUI(sender);
+            case "version":
+            case "ver":
+                return handleVersion(sender);
             case "reload":
                 return handleReload(sender);
             default:
@@ -222,14 +225,23 @@ public class ChunkLoaderCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
+        sender.sendMessage(Component.text("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━", NamedTextColor.GREEN));
         sender.sendMessage(Component.text("Chunk Loaders:", NamedTextColor.GOLD));
         for (ChunkLoaderRegion region : regions) {
             String status = region.isEnabled() ? "Enabled" : "Disabled";
             NamedTextColor statusColor = region.isEnabled() ? NamedTextColor.GREEN : NamedTextColor.RED;
-            sender.sendMessage(Component.text("  - " + region.getName() + ": " + region.getChunkCount() + " chunks in " + region.getWorldName() + " (", NamedTextColor.YELLOW)
+
+            sender.sendMessage(Component.text("  • ", NamedTextColor.GRAY)
+                    .append(Component.text(region.getName(), NamedTextColor.GOLD))
+                    .append(Component.text(" - ", NamedTextColor.GRAY))
+                    .append(Component.text(region.getChunkCount() + " chunks", NamedTextColor.YELLOW))
+                    .append(Component.text(" in ", NamedTextColor.GRAY))
+                    .append(Component.text(region.getWorldName(), NamedTextColor.AQUA))
+                    .append(Component.text(" (", NamedTextColor.GRAY))
                     .append(Component.text(status, statusColor))
-                    .append(Component.text(")", NamedTextColor.YELLOW)));
+                    .append(Component.text(")", NamedTextColor.GRAY)));
         }
+        sender.sendMessage(Component.text("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━", NamedTextColor.GREEN));
 
         return true;
     }
@@ -253,6 +265,7 @@ public class ChunkLoaderCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
+        sender.sendMessage(Component.text("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━", NamedTextColor.GREEN));
         sender.sendMessage(Component.text("Chunk Loader: ", NamedTextColor.GRAY)
                 .append(Component.text(region.getName(), NamedTextColor.GOLD)));
         sender.sendMessage(Component.text("  World: ", NamedTextColor.GRAY)
@@ -265,13 +278,15 @@ public class ChunkLoaderCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage(Component.text("  Status: ", NamedTextColor.GRAY)
                 .append(Component.text(status, statusColor)));
 
-        if (region.getChunkCount() <= 20) {
-            sender.sendMessage(Component.text("  Coordinates:", NamedTextColor.GRAY));
-            for (ChunkLoaderRegion.ChunkCoordinate coord : region.getChunks()) {
-                sender.sendMessage(Component.text("    • Chunk ", NamedTextColor.DARK_GRAY)
-                        .append(Component.text(coord.toString(), NamedTextColor.WHITE)));
-            }
+        if (region.getChunkCount() > 0) {
+            ChunkLoaderRegion.ChunkCoordinate[] corners = getCornerChunks(region);
+            sender.sendMessage(Component.text("  Corner Chunks:", NamedTextColor.GRAY));
+            sender.sendMessage(Component.text("    ", NamedTextColor.GRAY)
+                    .append(Component.text(corners[0].toString(), NamedTextColor.WHITE)));
+            sender.sendMessage(Component.text("    ", NamedTextColor.GRAY)
+                    .append(Component.text(corners[1].toString(), NamedTextColor.WHITE)));
         }
+        sender.sendMessage(Component.text("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━", NamedTextColor.GREEN));
 
         return true;
     }
@@ -301,6 +316,20 @@ public class ChunkLoaderCommand implements CommandExecutor, TabCompleter {
         }
 
         gui.openMainMenu(player);
+        return true;
+    }
+
+    private boolean handleVersion(CommandSender sender) {
+        String version = plugin.getDescription().getVersion();
+        String name = plugin.getDescription().getName();
+
+        sender.sendMessage(Component.text("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━", NamedTextColor.GREEN));
+        sender.sendMessage(Component.text(name, NamedTextColor.GOLD)
+                .append(Component.text(" v" + version, NamedTextColor.YELLOW)));
+        sender.sendMessage(Component.text("A powerful chunk loader plugin", NamedTextColor.GRAY));
+        sender.sendMessage(Component.text("GitHub: ", NamedTextColor.GRAY)
+                .append(Component.text("github.com/m2b-creator/Ultimate-Chunk-Loader", NamedTextColor.AQUA)));
+        sender.sendMessage(Component.text("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━", NamedTextColor.GREEN));
         return true;
     }
 
@@ -364,13 +393,14 @@ public class ChunkLoaderCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage(Component.text("/chunkloader disable <name> - Disable a chunk loader", NamedTextColor.YELLOW));
         sender.sendMessage(Component.text("/chunkloader list - List all chunk loaders", NamedTextColor.YELLOW));
         sender.sendMessage(Component.text("/chunkloader info <name> - View info about a chunk loader", NamedTextColor.YELLOW));
+        sender.sendMessage(Component.text("/chunkloader version - Show plugin version", NamedTextColor.YELLOW));
         sender.sendMessage(Component.text("/chunkloader reload - Reload the plugin", NamedTextColor.YELLOW));
     }
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length == 1) {
-            return filterMatching(args[0], Arrays.asList("gui", "menu", "create", "remove", "enable", "disable", "list", "info", "reload"));
+            return filterMatching(args[0], Arrays.asList("gui", "menu", "create", "remove", "enable", "disable", "list", "info", "version", "ver", "reload"));
         }
 
         if (args.length == 2 && (args[0].equalsIgnoreCase("remove") || args[0].equalsIgnoreCase("info")
@@ -397,5 +427,26 @@ public class ChunkLoaderCommand implements CommandExecutor, TabCompleter {
                 .filter(s -> s.toLowerCase().startsWith(lowerPrefix))
                 .sorted()
                 .toList();
+    }
+
+    private ChunkLoaderRegion.ChunkCoordinate[] getCornerChunks(ChunkLoaderRegion region) {
+        Set<ChunkLoaderRegion.ChunkCoordinate> chunks = region.getChunks();
+
+        int minX = Integer.MAX_VALUE;
+        int minZ = Integer.MAX_VALUE;
+        int maxX = Integer.MIN_VALUE;
+        int maxZ = Integer.MIN_VALUE;
+
+        for (ChunkLoaderRegion.ChunkCoordinate coord : chunks) {
+            minX = Math.min(minX, coord.getX());
+            minZ = Math.min(minZ, coord.getZ());
+            maxX = Math.max(maxX, coord.getX());
+            maxZ = Math.max(maxZ, coord.getZ());
+        }
+
+        return new ChunkLoaderRegion.ChunkCoordinate[] {
+            new ChunkLoaderRegion.ChunkCoordinate(minX, minZ),
+            new ChunkLoaderRegion.ChunkCoordinate(maxX, maxZ)
+        };
     }
 }

@@ -11,6 +11,8 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.Set;
+
 public class GUIListener implements Listener {
     private final ChunkLoader plugin;
     private final ChunkLoaderManager manager;
@@ -127,7 +129,7 @@ public class GUIListener implements Listener {
     }
 
     private void showRegionInfo(Player player, ChunkLoaderRegion region) {
-        player.sendMessage(Component.text("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━", NamedTextColor.DARK_GREEN));
+        player.sendMessage(Component.text("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━", NamedTextColor.GREEN));
         player.sendMessage(Component.text("Chunk Loader: ", NamedTextColor.GRAY)
                 .append(Component.text(region.getName(), NamedTextColor.GOLD)));
         player.sendMessage(Component.text("World: ", NamedTextColor.GRAY)
@@ -140,14 +142,36 @@ public class GUIListener implements Listener {
         player.sendMessage(Component.text("Status: ", NamedTextColor.GRAY)
                 .append(Component.text(status, statusColor)));
 
-        if (region.getChunkCount() <= 10) {
-            player.sendMessage(Component.text("Coordinates:", NamedTextColor.GRAY));
-            for (ChunkLoaderRegion.ChunkCoordinate coord : region.getChunks()) {
-                player.sendMessage(Component.text("  • Chunk ", NamedTextColor.DARK_GRAY)
-                        .append(Component.text(coord.toString(), NamedTextColor.WHITE)));
-            }
+        if (region.getChunkCount() > 0) {
+            ChunkLoaderRegion.ChunkCoordinate[] corners = getCornerChunks(region);
+            player.sendMessage(Component.text("Corner Chunks:", NamedTextColor.GRAY));
+            player.sendMessage(Component.text("  ", NamedTextColor.GRAY)
+                    .append(Component.text(corners[0].toString(), NamedTextColor.WHITE)));
+            player.sendMessage(Component.text("  ", NamedTextColor.GRAY)
+                    .append(Component.text(corners[1].toString(), NamedTextColor.WHITE)));
         }
-        player.sendMessage(Component.text("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━", NamedTextColor.DARK_GREEN));
+        player.sendMessage(Component.text("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━", NamedTextColor.GREEN));
+    }
+
+    private ChunkLoaderRegion.ChunkCoordinate[] getCornerChunks(ChunkLoaderRegion region) {
+        Set<ChunkLoaderRegion.ChunkCoordinate> chunks = region.getChunks();
+
+        int minX = Integer.MAX_VALUE;
+        int minZ = Integer.MAX_VALUE;
+        int maxX = Integer.MIN_VALUE;
+        int maxZ = Integer.MIN_VALUE;
+
+        for (ChunkLoaderRegion.ChunkCoordinate coord : chunks) {
+            minX = Math.min(minX, coord.getX());
+            minZ = Math.min(minZ, coord.getZ());
+            maxX = Math.max(maxX, coord.getX());
+            maxZ = Math.max(maxZ, coord.getZ());
+        }
+
+        return new ChunkLoaderRegion.ChunkCoordinate[] {
+            new ChunkLoaderRegion.ChunkCoordinate(minX, minZ),
+            new ChunkLoaderRegion.ChunkCoordinate(maxX, maxZ)
+        };
     }
 
     private String getPlainText(Component component) {
