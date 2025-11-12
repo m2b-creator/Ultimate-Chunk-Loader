@@ -163,4 +163,4 @@ Chunks remain loaded even when no players are nearby, making this perfect for fa
 
 ## License
 
-This plugin is provided as-is for use on Minecraft servers.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
