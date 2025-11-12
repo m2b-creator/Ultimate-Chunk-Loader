@@ -1,9 +1,9 @@
-name: ChunkLoader
-version: '1.0-SNAPSHOT'
+name: UltimateChunkLoader
+version: '1.0.0'
 main: solutions.m2b.chunkLoader.ChunkLoader
 api-version: '1.21'
 softdepend: [WorldEdit]
-description: Keep chunks loaded with coordinate-based or WorldEdit selection regions
+description: Ultimate Chunk Loader - Keep chunks loaded with coordinate-based or WorldEdit selection regions
 
 commands:
   chunkloader:

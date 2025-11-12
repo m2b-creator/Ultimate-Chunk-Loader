@@ -1,6 +1,6 @@
-# ChunkLoader
+# Ultimate Chunk Loader
 
-A Minecraft Paper plugin that keeps chunks loaded using coordinate-based regions or WorldEdit selections.
+A powerful Minecraft Paper plugin that keeps chunks loaded using coordinate-based regions or WorldEdit selections.
 
 ## Features
 
@@ -16,7 +16,7 @@ A Minecraft Paper plugin that keeps chunks loaded using coordinate-based regions
 
 ## Installation
 
-1. Download the latest `ChunkLoader.jar` from the [Releases](../../releases) page
+1. Download the latest `UltimateChunkLoader.jar` from the [Releases](../../releases) page
 2. Place it in your server's `plugins/` folder
 3. (Optional) Install [WorldEdit](https://dev.bukkit.org/projects/worldedit) for selection-based chunk loading
 4. Restart your server

@@ -46,7 +46,7 @@ public class GUIListener implements Listener {
         } else if (titleString.startsWith("Confirm to remove: ")) {
             event.setCancelled(true);
             plugin.getLogger().info("Handling confirm to remove click");
-            handleConfirmMenuClick(event, player, titleString.substring(16));
+            handleConfirmMenuClick(event, player, titleString.substring(19));
         }
     }
 
