@@ -16,9 +16,9 @@ A powerful Minecraft plugin for Paper and Spigot that keeps chunks loaded using 
 
 ## Installation
 
-1. Download the latest `UltimateChunkLoader.jar` from the [Releases](../../releases) page
+1. Download the latest `UltimateChunkLoader.jar`
 2. Place it in your server's `plugins/` folder
-3. (Optional) Install [WorldEdit](https://dev.bukkit.org/projects/worldedit) for selection-based chunk loading
+3. (Optional) Install [WorldEdit](https://modrinth.com/plugin/worldedit) for selection-based chunk loading
 4. Restart your server
 5. Configure permissions if needed (all commands default to OP)
 
@@ -135,7 +135,6 @@ Chunk loader data is stored in `plugins/ChunkLoader/data.yml` and persists acros
 ## Requirements
 
 - Paper 1.21+ or Spigot 1.21+ (or compatible forks)
-- Java 21+
 - WorldEdit (optional, for selection-based loading)
 
 ## How It Works
