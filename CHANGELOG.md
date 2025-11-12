@@ -53,13 +53,13 @@ Ultimate Chunk Loader's first stable release! A powerful chunk loading plugin wi
 - `chunkloader.reload` - Reload plugin
 
 #### Technical
-- Built for Paper 1.21+ and Spigot 1.21+ with Java 21
+- Built for Paper 1.21+ and Spigot 1.21+
 - Compatible with both Paper (native Adventure API) and Spigot (bundled Adventure API)
 - Uses Minecraft's native chunk ticket system
 - Event-driven architecture
 - Tab completion for all commands
 - Enhanced visual formatting:
-  - Green border lines for list and info commands
+  - Green borderlines for list and info commands
   - Corner chunks display showing only opposite corners for cleaner output
   - Color-coded information display for better readability
 
