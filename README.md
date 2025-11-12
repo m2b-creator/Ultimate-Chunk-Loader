@@ -1,6 +1,6 @@
 # Ultimate Chunk Loader
 
-A powerful Minecraft Paper plugin that keeps chunks loaded using coordinate-based regions or WorldEdit selections.
+A powerful Minecraft plugin for Paper and Spigot that keeps chunks loaded using coordinate-based regions or WorldEdit selections.
 
 ## Features
 
@@ -134,7 +134,7 @@ Chunk loader data is stored in `plugins/ChunkLoader/data.yml` and persists acros
 
 ## Requirements
 
-- Paper 1.21+ or compatible fork
+- Paper 1.21+ or Spigot 1.21+ (or compatible forks)
 - Java 21+
 - WorldEdit (optional, for selection-based loading)
 

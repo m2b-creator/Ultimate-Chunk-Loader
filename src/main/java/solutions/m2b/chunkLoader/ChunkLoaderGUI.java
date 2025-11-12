@@ -13,14 +13,17 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ChunkLoaderGUI {
     private final ChunkLoader plugin;
     private final ChunkLoaderManager manager;
+    private final MessageHelper messageHelper;
 
-    public ChunkLoaderGUI(ChunkLoader plugin, ChunkLoaderManager manager) {
+    public ChunkLoaderGUI(ChunkLoader plugin, ChunkLoaderManager manager, MessageHelper messageHelper) {
         this.plugin = plugin;
         this.manager = manager;
+        this.messageHelper = messageHelper;
     }
 
     public void openMainMenu(Player player) {
@@ -31,7 +34,7 @@ public class ChunkLoaderGUI {
         int size = Math.min(54, ((regions.size() + 8) / 9) * 9);
         if (size < 9) size = 9;
 
-        Inventory gui = Bukkit.createInventory(null, size, Component.text("Chunk Loaders", NamedTextColor.DARK_GREEN));
+        Inventory gui = Bukkit.createInventory(null, size, messageHelper.toLegacy(Component.text("Chunk Loaders", NamedTextColor.DARK_GREEN)));
 
         int slot = 0;
         for (ChunkLoaderRegion region : regions) {
@@ -52,8 +55,8 @@ public class ChunkLoaderGUI {
         ItemStack item = new ItemStack(material);
         ItemMeta meta = item.getItemMeta();
 
-        meta.displayName(Component.text(region.getName(), region.isEnabled() ? NamedTextColor.GREEN : NamedTextColor.RED)
-                .decoration(TextDecoration.ITALIC, false));
+        meta.setDisplayName(messageHelper.toLegacy(Component.text(region.getName(), region.isEnabled() ? NamedTextColor.GREEN : NamedTextColor.RED)
+                .decoration(TextDecoration.ITALIC, false)));
 
         List<Component> lore = new ArrayList<>();
         lore.add(Component.text("World: " + region.getWorldName(), NamedTextColor.GRAY)
@@ -71,35 +74,35 @@ public class ChunkLoaderGUI {
         lore.add(Component.text("Shift + Left Click: Remove", NamedTextColor.RED)
                 .decoration(TextDecoration.ITALIC, false));
 
-        meta.lore(lore);
+        meta.setLore(lore.stream().map(messageHelper::toLegacy).collect(Collectors.toList()));
         item.setItemMeta(meta);
 
         return item;
     }
 
     public void openConfirmRemoveMenu(Player player, String regionName) {
-        Inventory gui = Bukkit.createInventory(null, 27, Component.text("Confirm to remove: " + regionName, NamedTextColor.RED));
+        Inventory gui = Bukkit.createInventory(null, 27, messageHelper.toLegacy(Component.text("Confirm to remove: " + regionName, NamedTextColor.RED)));
 
         ItemStack confirm = new ItemStack(Material.GREEN_WOOL);
         ItemMeta confirmMeta = confirm.getItemMeta();
-        confirmMeta.displayName(Component.text("Confirm to remove", NamedTextColor.GREEN)
-                .decoration(TextDecoration.ITALIC, false));
+        confirmMeta.setDisplayName(messageHelper.toLegacy(Component.text("Confirm to remove", NamedTextColor.GREEN)
+                .decoration(TextDecoration.ITALIC, false)));
         List<Component> confirmLore = new ArrayList<>();
         confirmLore.add(Component.text("Click to permanently remove", NamedTextColor.GRAY)
                 .decoration(TextDecoration.ITALIC, false));
         confirmLore.add(Component.text(regionName, NamedTextColor.YELLOW)
                 .decoration(TextDecoration.ITALIC, false));
-        confirmMeta.lore(confirmLore);
+        confirmMeta.setLore(confirmLore.stream().map(messageHelper::toLegacy).collect(Collectors.toList()));
         confirm.setItemMeta(confirmMeta);
 
         ItemStack cancel = new ItemStack(Material.RED_WOOL);
         ItemMeta cancelMeta = cancel.getItemMeta();
-        cancelMeta.displayName(Component.text("Cancel", NamedTextColor.RED)
-                .decoration(TextDecoration.ITALIC, false));
+        cancelMeta.setDisplayName(messageHelper.toLegacy(Component.text("Cancel", NamedTextColor.RED)
+                .decoration(TextDecoration.ITALIC, false)));
         List<Component> cancelLore = new ArrayList<>();
         cancelLore.add(Component.text("Return to main menu", NamedTextColor.GRAY)
                 .decoration(TextDecoration.ITALIC, false));
-        cancelMeta.lore(cancelLore);
+        cancelMeta.setLore(cancelLore.stream().map(messageHelper::toLegacy).collect(Collectors.toList()));
         cancel.setItemMeta(cancelMeta);
 
         gui.setItem(11, confirm);
@@ -114,11 +117,11 @@ public class ChunkLoaderGUI {
         }
 
         ItemMeta meta = item.getItemMeta();
-        if (meta.displayName() == null) {
+        if (meta.getDisplayName() == null) {
             return null;
         }
 
-        Component displayName = meta.displayName();
+        Component displayName = messageHelper.fromLegacy(meta.getDisplayName());
         if (displayName instanceof net.kyori.adventure.text.TextComponent) {
             return ((net.kyori.adventure.text.TextComponent) displayName).content();
         }

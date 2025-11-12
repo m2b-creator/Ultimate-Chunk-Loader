@@ -4,7 +4,7 @@
 
 ### Initial Release 🎉
 
-Ultimate Chunk Loader's first stable release! A powerful chunk loading plugin with GUI management for Paper 1.21+.
+Ultimate Chunk Loader's first stable release! A powerful chunk loading plugin with GUI management for Paper 1.21+ and Spigot 1.21+.
 
 ### Features
 
@@ -53,7 +53,8 @@ Ultimate Chunk Loader's first stable release! A powerful chunk loading plugin wi
 - `chunkloader.reload` - Reload plugin
 
 #### Technical
-- Built for Paper 1.21+ with Java 21
+- Built for Paper 1.21+ and Spigot 1.21+ with Java 21
+- Compatible with both Paper (native Adventure API) and Spigot (bundled Adventure API)
 - Uses Minecraft's native chunk ticket system
 - Event-driven architecture
 - Tab completion for all commands

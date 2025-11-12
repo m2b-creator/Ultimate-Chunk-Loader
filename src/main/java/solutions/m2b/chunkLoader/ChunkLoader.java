@@ -5,6 +5,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 public final class ChunkLoader extends JavaPlugin {
     private ChunkLoaderManager manager;
     private DataStorage dataStorage;
+    private MessageHelper messageHelper;
 
     @Override
     public void onEnable() {
@@ -12,16 +13,17 @@ public final class ChunkLoader extends JavaPlugin {
 
         saveDefaultConfig();
 
+        messageHelper = new MessageHelper(this);
         manager = new ChunkLoaderManager(this);
         dataStorage = new DataStorage(this);
 
         loadData();
 
-        ChunkLoaderGUI gui = new ChunkLoaderGUI(this, manager);
-        GUIListener guiListener = new GUIListener(this, manager, gui);
+        ChunkLoaderGUI gui = new ChunkLoaderGUI(this, manager, messageHelper);
+        GUIListener guiListener = new GUIListener(this, manager, gui, messageHelper);
         getServer().getPluginManager().registerEvents(guiListener, this);
 
-        ChunkLoaderCommand commandHandler = new ChunkLoaderCommand(this, manager, gui);
+        ChunkLoaderCommand commandHandler = new ChunkLoaderCommand(this, manager, gui, messageHelper);
         getCommand("chunkloader").setExecutor(commandHandler);
         getCommand("chunkloader").setTabCompleter(commandHandler);
 
@@ -41,6 +43,10 @@ public final class ChunkLoader extends JavaPlugin {
         if (manager != null) {
             manager.unloadAllRegions();
             saveData();
+        }
+
+        if (messageHelper != null) {
+            messageHelper.close();
         }
 
         getLogger().info("ChunkLoader disabled successfully.");

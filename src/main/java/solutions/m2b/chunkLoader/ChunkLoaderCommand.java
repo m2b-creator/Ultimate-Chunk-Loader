@@ -22,12 +22,14 @@ public class ChunkLoaderCommand implements CommandExecutor, TabCompleter {
     private final ChunkLoader plugin;
     private final ChunkLoaderManager manager;
     private final ChunkLoaderGUI gui;
+    private final MessageHelper messageHelper;
     private final boolean worldEditAvailable;
 
-    public ChunkLoaderCommand(ChunkLoader plugin, ChunkLoaderManager manager, ChunkLoaderGUI gui) {
+    public ChunkLoaderCommand(ChunkLoader plugin, ChunkLoaderManager manager, ChunkLoaderGUI gui, MessageHelper messageHelper) {
         this.plugin = plugin;
         this.manager = manager;
         this.gui = gui;
+        this.messageHelper = messageHelper;
         this.worldEditAvailable = plugin.getServer().getPluginManager().getPlugin("WorldEdit") != null;
     }
 
@@ -67,27 +69,27 @@ public class ChunkLoaderCommand implements CommandExecutor, TabCompleter {
 
     private boolean handleCreate(CommandSender sender, String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage(Component.text("This command can only be used by players", NamedTextColor.RED));
+            messageHelper.sendMessage(sender, Component.text("This command can only be used by players", NamedTextColor.RED));
             return true;
         }
 
         Player player = (Player) sender;
 
         if (!player.hasPermission("chunkloader.create")) {
-            player.sendMessage(Component.text("You don't have permission to create chunk loaders", NamedTextColor.RED));
+            messageHelper.sendMessage(player, Component.text("You don't have permission to create chunk loaders", NamedTextColor.RED));
             return true;
         }
 
         if (args.length < 2) {
-            player.sendMessage(Component.text("Usage: /chunkloader create <name> <x1> <z1> <x2> <z2>", NamedTextColor.RED));
-            player.sendMessage(Component.text("Or: /chunkloader create <name> worldedit", NamedTextColor.RED));
+            messageHelper.sendMessage(player, Component.text("Usage: /chunkloader create <name> <x1> <z1> <x2> <z2>", NamedTextColor.RED));
+            messageHelper.sendMessage(player, Component.text("Or: /chunkloader create <name> worldedit", NamedTextColor.RED));
             return true;
         }
 
         String name = args[1];
 
         if (manager.regionExists(name)) {
-            player.sendMessage(Component.text("A chunk loader with that name already exists", NamedTextColor.RED));
+            messageHelper.sendMessage(player, Component.text("A chunk loader with that name already exists", NamedTextColor.RED));
             return true;
         }
 
@@ -95,17 +97,17 @@ public class ChunkLoaderCommand implements CommandExecutor, TabCompleter {
 
         if (args.length >= 3 && args[2].equalsIgnoreCase("worldedit")) {
             if (!worldEditAvailable) {
-                player.sendMessage(Component.text("WorldEdit is not installed on this server", NamedTextColor.RED));
+                messageHelper.sendMessage(player, Component.text("WorldEdit is not installed on this server", NamedTextColor.RED));
                 return true;
             }
 
             try {
                 chunks = getChunksFromWorldEdit(player);
             } catch (IncompleteRegionException e) {
-                player.sendMessage(Component.text("No WorldEdit selection found. Please make a selection first", NamedTextColor.RED));
+                messageHelper.sendMessage(player, Component.text("No WorldEdit selection found. Please make a selection first", NamedTextColor.RED));
                 return true;
             } catch (Exception e) {
-                player.sendMessage(Component.text("Error reading WorldEdit selection: " + e.getMessage(), NamedTextColor.RED));
+                messageHelper.sendMessage(player, Component.text("Error reading WorldEdit selection: " + e.getMessage(), NamedTextColor.RED));
                 return true;
             }
         } else if (args.length >= 6) {
@@ -116,12 +118,12 @@ public class ChunkLoaderCommand implements CommandExecutor, TabCompleter {
                 int z2 = Integer.parseInt(args[5]);
                 chunks = getChunksFromCoordinates(player.getWorld(), x1, z1, x2, z2);
             } catch (NumberFormatException e) {
-                player.sendMessage(Component.text("Invalid coordinates provided", NamedTextColor.RED));
+                messageHelper.sendMessage(player, Component.text("Invalid coordinates provided", NamedTextColor.RED));
                 return true;
             }
         } else {
-            player.sendMessage(Component.text("Usage: /chunkloader create <name> <x1> <z1> <x2> <z2>", NamedTextColor.RED));
-            player.sendMessage(Component.text("Or: /chunkloader create <name> worldedit", NamedTextColor.RED));
+            messageHelper.sendMessage(player, Component.text("Usage: /chunkloader create <name> <x1> <z1> <x2> <z2>", NamedTextColor.RED));
+            messageHelper.sendMessage(player, Component.text("Or: /chunkloader create <name> worldedit", NamedTextColor.RED));
             return true;
         }
 
@@ -129,18 +131,18 @@ public class ChunkLoaderCommand implements CommandExecutor, TabCompleter {
         manager.addRegion(region);
         plugin.saveData();
 
-        player.sendMessage(Component.text("Created chunk loader '" + name + "' with " + chunks.size() + " chunks", NamedTextColor.GREEN));
+        messageHelper.sendMessage(player, Component.text("Created chunk loader '" + name + "' with " + chunks.size() + " chunks", NamedTextColor.GREEN));
         return true;
     }
 
     private boolean handleRemove(CommandSender sender, String[] args) {
         if (!sender.hasPermission("chunkloader.remove")) {
-            sender.sendMessage(Component.text("You don't have permission to remove chunk loaders", NamedTextColor.RED));
+            messageHelper.sendMessage(sender, Component.text("You don't have permission to remove chunk loaders", NamedTextColor.RED));
             return true;
         }
 
         if (args.length < 2) {
-            sender.sendMessage(Component.text("Usage: /chunkloader remove <name>", NamedTextColor.RED));
+            messageHelper.sendMessage(sender, Component.text("Usage: /chunkloader remove <name>", NamedTextColor.RED));
             return true;
         }
 
@@ -148,9 +150,9 @@ public class ChunkLoaderCommand implements CommandExecutor, TabCompleter {
 
         if (manager.removeRegion(name)) {
             plugin.saveData();
-            sender.sendMessage(Component.text("Removed chunk loader '" + name + "'", NamedTextColor.GREEN));
+            messageHelper.sendMessage(sender, Component.text("Removed chunk loader '" + name + "'", NamedTextColor.GREEN));
         } else {
-            sender.sendMessage(Component.text("No chunk loader found with that name", NamedTextColor.RED));
+            messageHelper.sendMessage(sender, Component.text("No chunk loader found with that name", NamedTextColor.RED));
         }
 
         return true;
@@ -158,12 +160,12 @@ public class ChunkLoaderCommand implements CommandExecutor, TabCompleter {
 
     private boolean handleEnable(CommandSender sender, String[] args) {
         if (!sender.hasPermission("chunkloader.enable")) {
-            sender.sendMessage(Component.text("You don't have permission to enable chunk loaders", NamedTextColor.RED));
+            messageHelper.sendMessage(sender, Component.text("You don't have permission to enable chunk loaders", NamedTextColor.RED));
             return true;
         }
 
         if (args.length < 2) {
-            sender.sendMessage(Component.text("Usage: /chunkloader enable <name>", NamedTextColor.RED));
+            messageHelper.sendMessage(sender, Component.text("Usage: /chunkloader enable <name>", NamedTextColor.RED));
             return true;
         }
 
@@ -171,13 +173,13 @@ public class ChunkLoaderCommand implements CommandExecutor, TabCompleter {
 
         if (manager.enableRegion(name)) {
             plugin.saveData();
-            sender.sendMessage(Component.text("Enabled chunk loader '" + name + "'", NamedTextColor.GREEN));
+            messageHelper.sendMessage(sender, Component.text("Enabled chunk loader '" + name + "'", NamedTextColor.GREEN));
         } else {
             ChunkLoaderRegion region = manager.getRegion(name);
             if (region == null) {
-                sender.sendMessage(Component.text("No chunk loader found with that name", NamedTextColor.RED));
+                messageHelper.sendMessage(sender, Component.text("No chunk loader found with that name", NamedTextColor.RED));
             } else {
-                sender.sendMessage(Component.text("Chunk loader '" + name + "' is already enabled", NamedTextColor.YELLOW));
+                messageHelper.sendMessage(sender, Component.text("Chunk loader '" + name + "' is already enabled", NamedTextColor.YELLOW));
             }
         }
 
@@ -186,12 +188,12 @@ public class ChunkLoaderCommand implements CommandExecutor, TabCompleter {
 
     private boolean handleDisable(CommandSender sender, String[] args) {
         if (!sender.hasPermission("chunkloader.disable")) {
-            sender.sendMessage(Component.text("You don't have permission to disable chunk loaders", NamedTextColor.RED));
+            messageHelper.sendMessage(sender, Component.text("You don't have permission to disable chunk loaders", NamedTextColor.RED));
             return true;
         }
 
         if (args.length < 2) {
-            sender.sendMessage(Component.text("Usage: /chunkloader disable <name>", NamedTextColor.RED));
+            messageHelper.sendMessage(sender, Component.text("Usage: /chunkloader disable <name>", NamedTextColor.RED));
             return true;
         }
 
@@ -199,13 +201,13 @@ public class ChunkLoaderCommand implements CommandExecutor, TabCompleter {
 
         if (manager.disableRegion(name)) {
             plugin.saveData();
-            sender.sendMessage(Component.text("Disabled chunk loader '" + name + "'", NamedTextColor.GREEN));
+            messageHelper.sendMessage(sender, Component.text("Disabled chunk loader '" + name + "'", NamedTextColor.GREEN));
         } else {
             ChunkLoaderRegion region = manager.getRegion(name);
             if (region == null) {
-                sender.sendMessage(Component.text("No chunk loader found with that name", NamedTextColor.RED));
+                messageHelper.sendMessage(sender, Component.text("No chunk loader found with that name", NamedTextColor.RED));
             } else {
-                sender.sendMessage(Component.text("Chunk loader '" + name + "' is already disabled", NamedTextColor.YELLOW));
+                messageHelper.sendMessage(sender, Component.text("Chunk loader '" + name + "' is already disabled", NamedTextColor.YELLOW));
             }
         }
 
@@ -214,24 +216,24 @@ public class ChunkLoaderCommand implements CommandExecutor, TabCompleter {
 
     private boolean handleList(CommandSender sender) {
         if (!sender.hasPermission("chunkloader.list")) {
-            sender.sendMessage(Component.text("You don't have permission to list chunk loaders", NamedTextColor.RED));
+            messageHelper.sendMessage(sender, Component.text("You don't have permission to list chunk loaders", NamedTextColor.RED));
             return true;
         }
 
         Collection<ChunkLoaderRegion> regions = manager.getAllRegions();
 
         if (regions.isEmpty()) {
-            sender.sendMessage(Component.text("No chunk loaders are currently active", NamedTextColor.YELLOW));
+            messageHelper.sendMessage(sender, Component.text("No chunk loaders are currently active", NamedTextColor.YELLOW));
             return true;
         }
 
-        sender.sendMessage(Component.text("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━", NamedTextColor.GREEN));
-        sender.sendMessage(Component.text("Chunk Loaders:", NamedTextColor.GOLD));
+        messageHelper.sendMessage(sender, Component.text("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━", NamedTextColor.GREEN));
+        messageHelper.sendMessage(sender, Component.text("Chunk Loaders:", NamedTextColor.GOLD));
         for (ChunkLoaderRegion region : regions) {
             String status = region.isEnabled() ? "Enabled" : "Disabled";
             NamedTextColor statusColor = region.isEnabled() ? NamedTextColor.GREEN : NamedTextColor.RED;
 
-            sender.sendMessage(Component.text("  • ", NamedTextColor.GRAY)
+            messageHelper.sendMessage(sender, Component.text("  • ", NamedTextColor.GRAY)
                     .append(Component.text(region.getName(), NamedTextColor.GOLD))
                     .append(Component.text(" - ", NamedTextColor.GRAY))
                     .append(Component.text(region.getChunkCount() + " chunks", NamedTextColor.YELLOW))
@@ -241,19 +243,19 @@ public class ChunkLoaderCommand implements CommandExecutor, TabCompleter {
                     .append(Component.text(status, statusColor))
                     .append(Component.text(")", NamedTextColor.GRAY)));
         }
-        sender.sendMessage(Component.text("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━", NamedTextColor.GREEN));
+        messageHelper.sendMessage(sender, Component.text("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━", NamedTextColor.GREEN));
 
         return true;
     }
 
     private boolean handleInfo(CommandSender sender, String[] args) {
         if (!sender.hasPermission("chunkloader.info")) {
-            sender.sendMessage(Component.text("You don't have permission to view chunk loader info", NamedTextColor.RED));
+            messageHelper.sendMessage(sender, Component.text("You don't have permission to view chunk loader info", NamedTextColor.RED));
             return true;
         }
 
         if (args.length < 2) {
-            sender.sendMessage(Component.text("Usage: /chunkloader info <name>", NamedTextColor.RED));
+            messageHelper.sendMessage(sender, Component.text("Usage: /chunkloader info <name>", NamedTextColor.RED));
             return true;
         }
 
@@ -261,57 +263,57 @@ public class ChunkLoaderCommand implements CommandExecutor, TabCompleter {
         ChunkLoaderRegion region = manager.getRegion(name);
 
         if (region == null) {
-            sender.sendMessage(Component.text("No chunk loader found with that name", NamedTextColor.RED));
+            messageHelper.sendMessage(sender, Component.text("No chunk loader found with that name", NamedTextColor.RED));
             return true;
         }
 
-        sender.sendMessage(Component.text("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━", NamedTextColor.GREEN));
-        sender.sendMessage(Component.text("Chunk Loader: ", NamedTextColor.GRAY)
+        messageHelper.sendMessage(sender, Component.text("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━", NamedTextColor.GREEN));
+        messageHelper.sendMessage(sender, Component.text("Chunk Loader: ", NamedTextColor.GRAY)
                 .append(Component.text(region.getName(), NamedTextColor.GOLD)));
-        sender.sendMessage(Component.text("  World: ", NamedTextColor.GRAY)
+        messageHelper.sendMessage(sender, Component.text("  World: ", NamedTextColor.GRAY)
                 .append(Component.text(region.getWorldName(), NamedTextColor.AQUA)));
-        sender.sendMessage(Component.text("  Chunks: ", NamedTextColor.GRAY)
+        messageHelper.sendMessage(sender, Component.text("  Chunks: ", NamedTextColor.GRAY)
                 .append(Component.text(String.valueOf(region.getChunkCount()), NamedTextColor.YELLOW)));
 
         String status = region.isEnabled() ? "Enabled" : "Disabled";
         NamedTextColor statusColor = region.isEnabled() ? NamedTextColor.GREEN : NamedTextColor.RED;
-        sender.sendMessage(Component.text("  Status: ", NamedTextColor.GRAY)
+        messageHelper.sendMessage(sender, Component.text("  Status: ", NamedTextColor.GRAY)
                 .append(Component.text(status, statusColor)));
 
         if (region.getChunkCount() > 0) {
             ChunkLoaderRegion.ChunkCoordinate[] corners = getCornerChunks(region);
-            sender.sendMessage(Component.text("  Corner Chunks:", NamedTextColor.GRAY));
-            sender.sendMessage(Component.text("    ", NamedTextColor.GRAY)
+            messageHelper.sendMessage(sender, Component.text("  Corner Chunks:", NamedTextColor.GRAY));
+            messageHelper.sendMessage(sender, Component.text("    ", NamedTextColor.GRAY)
                     .append(Component.text(corners[0].toString(), NamedTextColor.WHITE)));
-            sender.sendMessage(Component.text("    ", NamedTextColor.GRAY)
+            messageHelper.sendMessage(sender, Component.text("    ", NamedTextColor.GRAY)
                     .append(Component.text(corners[1].toString(), NamedTextColor.WHITE)));
         }
-        sender.sendMessage(Component.text("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━", NamedTextColor.GREEN));
+        messageHelper.sendMessage(sender, Component.text("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━", NamedTextColor.GREEN));
 
         return true;
     }
 
     private boolean handleReload(CommandSender sender) {
         if (!sender.hasPermission("chunkloader.reload")) {
-            sender.sendMessage(Component.text("You don't have permission to reload the plugin", NamedTextColor.RED));
+            messageHelper.sendMessage(sender, Component.text("You don't have permission to reload the plugin", NamedTextColor.RED));
             return true;
         }
 
         plugin.reloadPlugin();
-        sender.sendMessage(Component.text("Plugin reloaded successfully", NamedTextColor.GREEN));
+        messageHelper.sendMessage(sender, Component.text("Plugin reloaded successfully", NamedTextColor.GREEN));
         return true;
     }
 
     private boolean handleGUI(CommandSender sender) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage(Component.text("This command can only be used by players", NamedTextColor.RED));
+            messageHelper.sendMessage(sender, Component.text("This command can only be used by players", NamedTextColor.RED));
             return true;
         }
 
         Player player = (Player) sender;
 
         if (!player.hasPermission("chunkloader.gui")) {
-            player.sendMessage(Component.text("You don't have permission to use the GUI", NamedTextColor.RED));
+            messageHelper.sendMessage(player, Component.text("You don't have permission to use the GUI", NamedTextColor.RED));
             return true;
         }
 
@@ -323,13 +325,13 @@ public class ChunkLoaderCommand implements CommandExecutor, TabCompleter {
         String version = plugin.getDescription().getVersion();
         String name = plugin.getDescription().getName();
 
-        sender.sendMessage(Component.text("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━", NamedTextColor.GREEN));
-        sender.sendMessage(Component.text(name, NamedTextColor.GOLD)
+        messageHelper.sendMessage(sender, Component.text("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━", NamedTextColor.GREEN));
+        messageHelper.sendMessage(sender, Component.text(name, NamedTextColor.GOLD)
                 .append(Component.text(" v" + version, NamedTextColor.YELLOW)));
-        sender.sendMessage(Component.text("A powerful chunk loader plugin", NamedTextColor.GRAY));
-        sender.sendMessage(Component.text("GitHub: ", NamedTextColor.GRAY)
+        messageHelper.sendMessage(sender, Component.text("A powerful chunk loader plugin", NamedTextColor.GRAY));
+        messageHelper.sendMessage(sender, Component.text("GitHub: ", NamedTextColor.GRAY)
                 .append(Component.text("github.com/m2b-creator/Ultimate-Chunk-Loader", NamedTextColor.AQUA)));
-        sender.sendMessage(Component.text("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━", NamedTextColor.GREEN));
+        messageHelper.sendMessage(sender, Component.text("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━", NamedTextColor.GREEN));
         return true;
     }
 
@@ -384,17 +386,17 @@ public class ChunkLoaderCommand implements CommandExecutor, TabCompleter {
     }
 
     private void sendHelp(CommandSender sender) {
-        sender.sendMessage(Component.text("ChunkLoader Commands:", NamedTextColor.GOLD));
-        sender.sendMessage(Component.text("/chunkloader gui - Open management GUI", NamedTextColor.AQUA));
-        sender.sendMessage(Component.text("/chunkloader create <name> <x1> <z1> <x2> <z2> - Create from coordinates", NamedTextColor.YELLOW));
-        sender.sendMessage(Component.text("/chunkloader create <name> worldedit - Create from WorldEdit selection", NamedTextColor.YELLOW));
-        sender.sendMessage(Component.text("/chunkloader remove <name> - Remove a chunk loader", NamedTextColor.YELLOW));
-        sender.sendMessage(Component.text("/chunkloader enable <name> - Enable a chunk loader", NamedTextColor.YELLOW));
-        sender.sendMessage(Component.text("/chunkloader disable <name> - Disable a chunk loader", NamedTextColor.YELLOW));
-        sender.sendMessage(Component.text("/chunkloader list - List all chunk loaders", NamedTextColor.YELLOW));
-        sender.sendMessage(Component.text("/chunkloader info <name> - View info about a chunk loader", NamedTextColor.YELLOW));
-        sender.sendMessage(Component.text("/chunkloader version - Show plugin version", NamedTextColor.YELLOW));
-        sender.sendMessage(Component.text("/chunkloader reload - Reload the plugin", NamedTextColor.YELLOW));
+        messageHelper.sendMessage(sender, Component.text("ChunkLoader Commands:", NamedTextColor.GOLD));
+        messageHelper.sendMessage(sender, Component.text("/chunkloader gui - Open management GUI", NamedTextColor.AQUA));
+        messageHelper.sendMessage(sender, Component.text("/chunkloader create <name> <x1> <z1> <x2> <z2> - Create from coordinates", NamedTextColor.YELLOW));
+        messageHelper.sendMessage(sender, Component.text("/chunkloader create <name> worldedit - Create from WorldEdit selection", NamedTextColor.YELLOW));
+        messageHelper.sendMessage(sender, Component.text("/chunkloader remove <name> - Remove a chunk loader", NamedTextColor.YELLOW));
+        messageHelper.sendMessage(sender, Component.text("/chunkloader enable <name> - Enable a chunk loader", NamedTextColor.YELLOW));
+        messageHelper.sendMessage(sender, Component.text("/chunkloader disable <name> - Disable a chunk loader", NamedTextColor.YELLOW));
+        messageHelper.sendMessage(sender, Component.text("/chunkloader list - List all chunk loaders", NamedTextColor.YELLOW));
+        messageHelper.sendMessage(sender, Component.text("/chunkloader info <name> - View info about a chunk loader", NamedTextColor.YELLOW));
+        messageHelper.sendMessage(sender, Component.text("/chunkloader version - Show plugin version", NamedTextColor.YELLOW));
+        messageHelper.sendMessage(sender, Component.text("/chunkloader reload - Reload the plugin", NamedTextColor.YELLOW));
     }
 
     @Override

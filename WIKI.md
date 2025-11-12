@@ -2,7 +2,7 @@
 
 ## Quick Start
 
-1. Install the plugin in your `plugins/` folder
+1. Install the plugin in your `plugins/` folder (works with both Paper and Spigot 1.21+)
 2. Restart your server
 3. Run `/chunkloader gui` to open the management menu
 
