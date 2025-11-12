@@ -14,28 +14,13 @@ A Minecraft Paper plugin that keeps chunks loaded using coordinate-based regions
 - Permission-based access control
 - List and view information about all chunk loaders with their status
 
-## Building
-
-First, set up the Gradle wrapper:
-
-```bash
-gradle wrapper
-```
-
-Then build the plugin:
-
-```bash
-./gradlew build
-```
-
-The compiled plugin JAR will be in `build/libs/ChunkLoader-1.0-SNAPSHOT.jar`
-
 ## Installation
 
-1. Download or build the plugin JAR
+1. Download the latest `ChunkLoader.jar` from the [Releases](../../releases) page
 2. Place it in your server's `plugins/` folder
-3. (Optional) Install WorldEdit for selection-based chunk loading
+3. (Optional) Install [WorldEdit](https://dev.bukkit.org/projects/worldedit) for selection-based chunk loading
 4. Restart your server
+5. Configure permissions if needed (all commands default to OP)
 
 ## Commands
 
