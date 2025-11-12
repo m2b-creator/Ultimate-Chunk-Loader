@@ -78,11 +78,11 @@ public class ChunkLoaderGUI {
     }
 
     public void openConfirmRemoveMenu(Player player, String regionName) {
-        Inventory gui = Bukkit.createInventory(null, 27, Component.text("Confirm Remove: " + regionName, NamedTextColor.RED));
+        Inventory gui = Bukkit.createInventory(null, 27, Component.text("Confirm to remove: " + regionName, NamedTextColor.RED));
 
         ItemStack confirm = new ItemStack(Material.GREEN_WOOL);
         ItemMeta confirmMeta = confirm.getItemMeta();
-        confirmMeta.displayName(Component.text("Confirm Remove", NamedTextColor.GREEN)
+        confirmMeta.displayName(Component.text("Confirm to remove", NamedTextColor.GREEN)
                 .decoration(TextDecoration.ITALIC, false));
         List<Component> confirmLore = new ArrayList<>();
         confirmLore.add(Component.text("Click to permanently remove", NamedTextColor.GRAY)

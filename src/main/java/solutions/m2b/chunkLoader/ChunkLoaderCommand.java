@@ -253,19 +253,23 @@ public class ChunkLoaderCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        sender.sendMessage(Component.text("Chunk Loader Info: " + region.getName(), NamedTextColor.GOLD));
-        sender.sendMessage(Component.text("  World: " + region.getWorldName(), NamedTextColor.YELLOW));
-        sender.sendMessage(Component.text("  Chunks: " + region.getChunkCount(), NamedTextColor.YELLOW));
+        sender.sendMessage(Component.text("Chunk Loader: ", NamedTextColor.GRAY)
+                .append(Component.text(region.getName(), NamedTextColor.GOLD)));
+        sender.sendMessage(Component.text("  World: ", NamedTextColor.GRAY)
+                .append(Component.text(region.getWorldName(), NamedTextColor.AQUA)));
+        sender.sendMessage(Component.text("  Chunks: ", NamedTextColor.GRAY)
+                .append(Component.text(String.valueOf(region.getChunkCount()), NamedTextColor.YELLOW)));
 
         String status = region.isEnabled() ? "Enabled" : "Disabled";
         NamedTextColor statusColor = region.isEnabled() ? NamedTextColor.GREEN : NamedTextColor.RED;
-        sender.sendMessage(Component.text("  Status: ").color(NamedTextColor.YELLOW)
+        sender.sendMessage(Component.text("  Status: ", NamedTextColor.GRAY)
                 .append(Component.text(status, statusColor)));
 
         if (region.getChunkCount() <= 20) {
-            sender.sendMessage(Component.text("  Coordinates:", NamedTextColor.YELLOW));
+            sender.sendMessage(Component.text("  Coordinates:", NamedTextColor.GRAY));
             for (ChunkLoaderRegion.ChunkCoordinate coord : region.getChunks()) {
-                sender.sendMessage(Component.text("    - " + coord.toString(), NamedTextColor.GRAY));
+                sender.sendMessage(Component.text("    • Chunk ", NamedTextColor.DARK_GRAY)
+                        .append(Component.text(coord.toString(), NamedTextColor.WHITE)));
             }
         }
 

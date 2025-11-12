@@ -43,9 +43,9 @@ public class GUIListener implements Listener {
             event.setCancelled(true);
             plugin.getLogger().info("Handling main menu click");
             handleMainMenuClick(event, player);
-        } else if (titleString.startsWith("Confirm Remove: ")) {
+        } else if (titleString.startsWith("Confirm to remove: ")) {
             event.setCancelled(true);
-            plugin.getLogger().info("Handling confirm remove click");
+            plugin.getLogger().info("Handling confirm to remove click");
             handleConfirmMenuClick(event, player, titleString.substring(16));
         }
     }
@@ -128,19 +128,23 @@ public class GUIListener implements Listener {
 
     private void showRegionInfo(Player player, ChunkLoaderRegion region) {
         player.sendMessage(Component.text("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━", NamedTextColor.DARK_GREEN));
-        player.sendMessage(Component.text("Chunk Loader: " + region.getName(), NamedTextColor.GOLD));
-        player.sendMessage(Component.text("World: " + region.getWorldName(), NamedTextColor.YELLOW));
-        player.sendMessage(Component.text("Chunks: " + region.getChunkCount(), NamedTextColor.YELLOW));
+        player.sendMessage(Component.text("Chunk Loader: ", NamedTextColor.GRAY)
+                .append(Component.text(region.getName(), NamedTextColor.GOLD)));
+        player.sendMessage(Component.text("World: ", NamedTextColor.GRAY)
+                .append(Component.text(region.getWorldName(), NamedTextColor.AQUA)));
+        player.sendMessage(Component.text("Chunks: ", NamedTextColor.GRAY)
+                .append(Component.text(String.valueOf(region.getChunkCount()), NamedTextColor.YELLOW)));
 
         String status = region.isEnabled() ? "Enabled" : "Disabled";
         NamedTextColor statusColor = region.isEnabled() ? NamedTextColor.GREEN : NamedTextColor.RED;
-        player.sendMessage(Component.text("Status: ").color(NamedTextColor.YELLOW)
+        player.sendMessage(Component.text("Status: ", NamedTextColor.GRAY)
                 .append(Component.text(status, statusColor)));
 
         if (region.getChunkCount() <= 10) {
-            player.sendMessage(Component.text("Coordinates:", NamedTextColor.YELLOW));
+            player.sendMessage(Component.text("Coordinates:", NamedTextColor.GRAY));
             for (ChunkLoaderRegion.ChunkCoordinate coord : region.getChunks()) {
-                player.sendMessage(Component.text("  • Chunk " + coord.toString(), NamedTextColor.GRAY));
+                player.sendMessage(Component.text("  • Chunk ", NamedTextColor.DARK_GRAY)
+                        .append(Component.text(coord.toString(), NamedTextColor.WHITE)));
             }
         }
         player.sendMessage(Component.text("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━", NamedTextColor.DARK_GREEN));
