@@ -1,0 +1,50 @@
+name: ChunkLoader
+version: '1.0-SNAPSHOT'
+main: solutions.m2b.chunkLoader.ChunkLoader
+api-version: '1.21'
+softdepend: [WorldEdit]
+description: Keep chunks loaded with coordinate-based or WorldEdit selection regions
+
+commands:
+  chunkloader:
+    description: Main chunk loader command
+    usage: /chunkloader <create|remove|list|info|reload>
+    aliases: [cl, cloader]
+
+permissions:
+  chunkloader.*:
+    description: Gives access to all chunk loader commands
+    default: op
+    children:
+      chunkloader.create: true
+      chunkloader.remove: true
+      chunkloader.enable: true
+      chunkloader.disable: true
+      chunkloader.list: true
+      chunkloader.info: true
+      chunkloader.gui: true
+      chunkloader.reload: true
+  chunkloader.create:
+    description: Allows creating chunk loaders
+    default: op
+  chunkloader.remove:
+    description: Allows removing chunk loaders
+    default: op
+  chunkloader.enable:
+    description: Allows enabling chunk loaders
+    default: op
+  chunkloader.disable:
+    description: Allows disabling chunk loaders
+    default: op
+  chunkloader.list:
+    description: Allows listing chunk loaders
+    default: op
+  chunkloader.info:
+    description: Allows viewing chunk loader info
+    default: op
+  chunkloader.gui:
+    description: Allows using the GUI menu
+    default: op
+  chunkloader.reload:
+    description: Allows reloading the plugin
+    default: op

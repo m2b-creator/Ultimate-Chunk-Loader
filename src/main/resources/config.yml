@@ -1,0 +1,16 @@
+# ChunkLoader Configuration
+# This plugin keeps chunks loaded to ensure continuous operation
+
+# Plugin settings
+settings:
+  # Enable debug logging
+  debug: false
+
+  # Auto-save interval in minutes (set to 0 to disable auto-save)
+  auto-save-interval: 5
+
+# Messages (customize plugin messages)
+messages:
+  prefix: "&6[ChunkLoader]&r "
+  no-permission: "&cYou don't have permission to do that."
+  reload-success: "&aPlugin reloaded successfully!"
